@@ -30,7 +30,21 @@ Preview locally: `python3 -m http.server 8000`, then open http://localhost:8000
 - Ask before adding a dependency or a build step.
 
 ## Workflow
-- Work on the Mac in `~/Sites/space/space-teleprompter`. Preview locally, commit small, push to `main`.
+- Work on the Mac in `~/Sites/space/space-teleprompter`, on the `next` branch. `main` = what's live.
+- Preview locally: the `prompter` config in `.claude/launch.json` (port 8001; Space Cam uses 8000). The service worker only registers on https, so localhost never serves a stale cached copy.
+- Commit small on `next`. Add each user-facing fix to **Unreleased** in `CHANGELOG.md`.
+- Don't merge to `main`, push `main`, or deploy until Shovon says so.
+
+## Releasing (only when Shovon says "release" / "send the update")
+- When a set of fixes is complete, tell Shovon what's in Unreleased and ask when to send the update. Don't release on your own.
+- To release: bump `APP_VERSION` (e.g. v3.5 → v3.6), set `APP_NOTES` to the one-line toast text (short, plain), bump `CACHE` in `sw.js`, move Unreleased under the new version in `CHANGELOG.md`.
+- Merge `next` into `main` (fast-forward), push, then Shovon runs `deploy-space prompter` on the VPS.
+- Open copies see the update toast within ~10 minutes (or on tab focus): "v3.6 is ready: <notes> Tap to reload." Copies on v3.5 or older show the plain toast without the note.
+
+## Naming
+- The product is **Space Prompter**. "teleprompter" as a plain word for the kind of app is fine.
+- Keep internal ids as they are (`mgdTeleprompterSync`, `mgdTeleprompterStageV2`, `--mgd-stage-width`, localStorage keys): renaming them breaks pairing between open windows on different versions, or saved data.
+- The repo/folder name `space-teleprompter` stays unless Shovon decides to rename it (the VPS git paths, deploy-space and relay/INSTALL.md depend on it).
 - Live files on the VPS (CloudPanel, one site user each):
   - App: `/home/prompter/htdocs/prompter.shovonix.dev` (user `prompter`)
   - Old address: `/home/studio/htdocs/studio.shovonix.dev` (user `studio`)

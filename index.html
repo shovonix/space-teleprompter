@@ -761,7 +761,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
   <div id="connected-frame"></div>
   <div id="stage-hint" class="hidden">
     <div id="stage-hint-card">
-      <div class="t" id="stage-hint-title">Staging Teleprompter Preview</div>
+      <div class="t" id="stage-hint-title">Space Prompter stage</div>
       <div class="s" id="stage-hint-body">Drag this window onto your external display, then click anywhere (or press F) to go fullscreen. Press Play in the control window to start scrolling here. Press <kbd>Esc</kbd> any time to drop out of fullscreen and bring this card back.</div>
     </div>
   </div>
@@ -5077,6 +5077,9 @@ var qrcode = function() {
 
   // ---- Build/version indicator (control window top bar) ----
   var APP_VERSION = 'v3.5';
+  // One short line about this release, shown in the update toast of copies still on
+  // the previous version. Set it when releasing (see CHANGELOG.md); '' = no line.
+  var APP_NOTES = '';
   if(buildMeta && !isStageWindow){
     buildMeta.textContent = APP_VERSION;
   }
@@ -5097,7 +5100,11 @@ var qrcode = function() {
         var m = t.match(/var APP_VERSION = '([^']+)'/);
         if(m && m[1] !== APP_VERSION){
           var el = document.getElementById('update-toast');
-          el.textContent = 'A new version (' + m[1] + ') is available — tap to reload';
+          var n = t.match(/var APP_NOTES = '((?:[^'\\]|\\.)*)'/);
+          var notes = n ? n[1].replace(/\\(.)/g, '$1').trim() : '';
+          el.textContent = notes
+            ? m[1] + ' is ready: ' + notes + ' Tap to reload.'
+            : 'A new version (' + m[1] + ') is available — tap to reload';
           el.classList.add('show');
         }
       }).catch(function(){}).then(function(){ updateChecking = false; });
