@@ -3416,12 +3416,23 @@ var qrcode = function() {
   function isEditingScript(){
     return !isStageWindow && document.activeElement && scriptText.contains(document.activeElement);
   }
+  var renderedText = null; // the exact text currently built into #script-text
   function applyText(){
     // Inline editing: our own typing already lives in the DOM, so rebuilding
     // it here would reset the caret and scroll position mid-sentence.
     if(isEditingScript()) return;
     var activeS = activeScript();
     var text = (activeS && activeS.text) || (isStageWindow ? 'Waiting for script from the control window…' : '');
+
+    // Same text already on screen: leave the DOM alone. Every 'state'
+    // broadcast (any slider, key, or stage-width report) lands here, and
+    // tearing the paragraphs down for nothing made the text flash and jump
+    // while reading.
+    if(text === renderedText && scriptText.firstChild) return;
+    // The text really changed (e.g. edited in the other window): rebuild, but
+    // keep the reader on the same line instead of snapping back toward the top.
+    var keepG = (renderedText !== null && !stage.classList.contains('hidden') && scroller.scrollTop > 0) ? getG() : null;
+    renderedText = text;
 
     // Split on blank lines into paragraph blocks (not just one text node) so
     // "previous paragraph" has real boundaries to jump between.
@@ -3436,6 +3447,12 @@ var qrcode = function() {
     });
     scriptText.appendChild(frag);
     applyViewScale();
+    if(keepG !== null && isFinite(keepG)){
+      suppressScrollSync = true;
+      clearTimeout(suppressScrollSyncTimer);
+      suppressScrollSyncTimer = setTimeout(function(){ suppressScrollSync = false; }, 120);
+      setG(keepG);
+    }
     dimCur = -2; scheduleDim();
     updateProgress();
   }
