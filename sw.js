@@ -1,6 +1,6 @@
 // Space Prompter service worker: makes the app installable and openable offline.
 // Pages are network-first (so updates show up), with the cached copy as fallback.
-const CACHE = 'space-prompter-v3';
+const CACHE = 'space-prompter-v4';
 const SHELL = ['/', '/icon-192.png', '/icon-mac-512.png', '/apple-touch-icon.png', '/manifest.webmanifest'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => {
