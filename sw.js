@@ -10,7 +10,9 @@ self.addEventListener('fetch', (e) => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/relay')) return;
   e.respondWith(
-    fetch(req).then((res) => {
+    // Page loads always ask the server whether index.html changed (no-cache = a 304 when not),
+    // so the installed app never opens on an old copy. (Same as Space Cam v1.6.)
+    fetch(req.mode === 'navigate' ? new Request(req, { cache: 'no-cache' }) : req).then((res) => {
       if (res.ok && (req.mode === 'navigate' || SHELL.includes(url.pathname))) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req.mode === 'navigate' ? '/' : req, copy)); }
       return res;
     }).catch(() => caches.match(req.mode === 'navigate' ? '/' : req))

@@ -5277,7 +5277,8 @@ var qrcode = function() {
     };
     window.__spCheckUpdate = checkForUpdate;
     setTimeout(checkForUpdate, 4000);
-    setInterval(checkForUpdate, 10 * 60 * 1000);
+    setInterval(checkForUpdate, 3 * 60 * 1000);
+    window.addEventListener('focus', checkForUpdate); // installed app: clicking back into its window checks too
     document.addEventListener('visibilitychange', function(){ if(!document.hidden) checkForUpdate(); });
     document.getElementById('update-toast').addEventListener('click', function(){ location.reload(); });
   }
