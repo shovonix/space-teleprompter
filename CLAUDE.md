@@ -37,9 +37,10 @@ Preview locally: `python3 -m http.server 8000`, then open http://localhost:8000
 
 ## Releasing (only when Shovon says "release" / "send the update")
 - When a set of fixes is complete, tell Shovon what's in Unreleased and ask when to send the update. Don't release on your own.
-- To release: bump `APP_VERSION` (e.g. v3.5 → v3.6), set `APP_NOTES` to the one-line toast text (short, plain), bump `CACHE` in `sw.js`, move Unreleased under the new version in `CHANGELOG.md`.
+- To release: bump `APP_VERSION` (e.g. v3.5 → v3.6), fill the What's new list (`<script id="sp-changes">` JSON in `index.html`: plain lines under "added" / "fixed"; shown once after the reload, and on a click on the version bottom left), set `APP_NOTES` to the one-line toast text (still read by open v3.6/v3.7 copies), bump `CACHE` in `sw.js`, move Unreleased under the new version in `CHANGELOG.md`.
 - Merge `next` into `main` (fast-forward), push, then Shovon runs `deploy-space prompter` on the VPS.
-- Open copies see the update toast within ~10 minutes (or on tab focus): "v3.6 is ready: <notes> Tap to reload." Copies on v3.5 or older show the plain toast without the note.
+- Open copies see the update notice within ~3 minutes (or when the window gets focus). From v4.0: one short line with ✕, then What's new after the reload. Copies on v3.6/v3.7 show "vX is ready: <APP_NOTES> Tap to reload."
+- Local keys added in v4 (separate from the scripts store): `spTheme`, `spSeenVersion`, `spCustomLogo`, `spCamPromoDone`.
 
 ## Naming
 - The product is **Space Prompter**. "teleprompter" as a plain word for the kind of app is fine.
