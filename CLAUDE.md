@@ -1,6 +1,6 @@
 # Space Prompter (repo: space-teleprompter)
 
-Self-hosted teleprompter for video shoots. Live at https://prompter.shovonix.dev (old address studio.shovonix.dev is being phased out). The first Space app; the others copy its style.
+Self-hosted teleprompter for video shoots. Live at https://prompter.shovonix.dev. (The old address studio.shovonix.dev was shut down on 11 Nov 2026: site deleted, DNS record removed, no longer answers.) The first Space app; the others copy its style.
 
 ## What's in this repo
 - `index.html` — the whole app. No build step. Scripts and settings live in `localStorage`.
@@ -8,7 +8,7 @@ Self-hosted teleprompter for video shoots. Live at https://prompter.shovonix.dev
 - `site/` — the shovonix.dev hub page and blog.
 - `landing/` — landing pages (`space-prompter/`, `fx/`).
 - `ops/sp-stats.sh` — GoAccess traffic stats from nginx logs (runs on the VPS as root).
-- `migrate.html` — moves saved scripts from the old studio address.
+- `migrate.html` — moved saved scripts from the old studio address. Dead since studio was shut down (11 Nov 2026); the migration block in `index.html` now times out harmlessly. Both can be removed.
 
 Preview locally: `python3 -m http.server 8000`, then open http://localhost:8000
 
@@ -47,12 +47,12 @@ Preview locally: `python3 -m http.server 8000`, then open http://localhost:8000
 - The repo/folder name `space-teleprompter` stays unless Shovon decides to rename it (the VPS git paths, deploy-space and relay/INSTALL.md depend on it).
 - Live files on the VPS (CloudPanel, one site user each):
   - App: `/home/prompter/htdocs/prompter.shovonix.dev` (user `prompter`)
-  - Old address: `/home/studio/htdocs/studio.shovonix.dev` (user `studio`)
+  - Old address studio.shovonix.dev: deleted 11 Nov 2026 (`clpctl site:delete`, user `studio` gone, Cloudflare A record deleted). Backup: `/root/studio-site-backup-20261111.tgz` on the VPS.
   - Hub + blog + landing pages (`site/`, `landing/`): `/home/shovonix/htdocs/shovonix.dev` (user `shovonix`)
   - Stats: `/home/stats/htdocs/stats.shovonix.dev` (user `stats`)
-  - Relay: not under any htdocs folder. Location not recorded yet; find it before touching it, then add it here.
+  - Relay: `/opt/space-prompter-relay` (owned by system user `spacerelay`, no login), systemd `space-prompter-relay.service`, listens on 127.0.0.1:8787, `ALLOWED_ORIGINS=https://prompter.shovonix.dev,https://shovonix.dev`. Routed by `location /relay` in the prompter vhost (CloudPanel Vhost tab). Ran as user `studio` until 11 Nov 2026; old unit saved at `/root/space-prompter-relay.service.bak-20261111`. Not updated by deploy: copy `relay/server.js` by hand, then `systemctl restart space-prompter-relay`.
 - Deploy the app: push to `main`, then on the VPS run `deploy-space prompter` as root. It pulls `main` as user `prompter` (fast-forward only) and checks the site returns 200.
 - Git data lives outside the web root at `/home/prompter/space-teleprompter.git`. `landing/`, `site/`, `relay/`, `ops/`, `README.md` and `CLAUDE.md` are excluded from the live folder via sparse-checkout.
 - Hub: `deploy-space hub` pulls source copies in `/home/shovonix/src/` and copies `site/` → hub root, `landing/fx/` → `/fx/`, `landing/space-prompter/` → `/space-prompter/`, plus each app's `landing/space-<app>/`. It never deletes files on the hub (the `stats-…` folder lives there).
-- studio (old address) and the relay are NOT on `deploy-space`. Ask Shovon before touching them.
+- The relay is NOT on `deploy-space`. Ask Shovon before touching it.
 - Never edit the live files on the VPS directly.

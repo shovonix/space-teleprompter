@@ -9,7 +9,7 @@ const http = require('http');
 const crypto = require('crypto');
 
 const PORT = Number(process.env.PORT || 8787);
-const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://prompter.shovonix.dev,https://studio.shovonix.dev,http://localhost:8099,http://127.0.0.1:8099').split(',');
+const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://prompter.shovonix.dev,http://localhost:8099,http://127.0.0.1:8099').split(',');
 const MAX_MSG = 512 * 1024;      // bytes per message
 const MAX_PEERS = 4;             // host + up to 3 phones/tablets per room
 const MAX_ROOMS = 500;

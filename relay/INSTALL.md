@@ -10,7 +10,8 @@ mkdir -p /opt/space-prompter-relay && cd /opt/space-prompter-relay
 curl -sSL -H "Accept: application/vnd.github.raw+json" -o server.js  "https://api.github.com/repos/shovonix/space-teleprompter/contents/relay/server.js?ref=main"
 curl -sSL -H "Accept: application/vnd.github.raw+json" -o package.json "https://api.github.com/repos/shovonix/space-teleprompter/contents/relay/package.json?ref=main"
 # no npm install needed: the relay has zero dependencies (needs Node 18+: apt install -y nodejs)
-chown -R studio:studio /opt/space-prompter-relay
+useradd --system --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin spacerelay
+chown -R spacerelay:spacerelay /opt/space-prompter-relay
 ```
 
 ## 2. Run it as a service
@@ -23,10 +24,10 @@ Description=Space Prompter pairing relay
 After=network.target
 
 [Service]
-User=studio
+User=spacerelay
 WorkingDirectory=/opt/space-prompter-relay
 Environment=PORT=8787
-Environment=ALLOWED_ORIGINS=https://prompter.shovonix.dev,https://studio.shovonix.dev,https://shovonix.dev
+Environment=ALLOWED_ORIGINS=https://prompter.shovonix.dev,https://shovonix.dev
 ExecStart=/usr/bin/node server.js
 Restart=always
 RestartSec=3
@@ -42,7 +43,7 @@ curl -s http://127.0.0.1:8787/healthz   # should print: ok
 
 ## 3. Route /relay through nginx
 
-CloudPanel: Sites > prompter.shovonix.dev > Vhost (and studio.shovonix.dev while it still exists), add inside the `server { ... }` block:
+CloudPanel: Sites > prompter.shovonix.dev > Vhost, add inside the `server { ... }` block:
 
 ```nginx
 location /relay {
