@@ -2,8 +2,8 @@
 
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
-## Unreleased
-- (nothing yet)
+## Unreleased (next: v4.0)
+- Pasting from Google Docs, Word or a web page keeps your paragraphs and empty lines exactly. Extra blank lines add space on the prompter.
 
 ## v3.7 (11 Nov 2026)
 - Setup page: a card introducing Space Cam (camera + prompter in one window) for solo shoots. Desktop only. Hidden for good once closed or clicked, or if Space Cam has set its `spacecam=1` cookie.
