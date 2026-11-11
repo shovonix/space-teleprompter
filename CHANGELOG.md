@@ -3,6 +3,7 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- Wording: labels, tooltips and messages are short and plain, the same as Space Cam.
 - Calmer messages: rename, delete and "discard changes?" are Space-style cards instead of browser boxes; tips are short cards at the top with one button that does the fix; the pairing pill is black and white.
 - New script opens an empty paste box straight away (rename it with the pencil).
 - Hover notes: rest the mouse on a control's name to see what it does.

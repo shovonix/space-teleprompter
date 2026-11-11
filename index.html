@@ -1058,7 +1058,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
     <div id="setup-top">
       <button type="button" id="setup-brand" aria-label="New script"><img class="brand-logo" id="setup-logo" alt=""><span class="name">Space Prompter</span></button>
       <button type="button" class="install-btn" id="install-setup" hidden aria-label="Install Space Prompter as an app"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg><span>Install app</span></button>
-      <button type="button" id="menu-btn" aria-label="Manage scripts" title="Manage scripts (rename, delete)">☰</button>
+      <button type="button" id="menu-btn" aria-label="Manage scripts" title="Your scripts">☰</button>
     </div>
     <div id="setup-scripts"></div>
     <div class="setup-device">
@@ -1117,7 +1117,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
   <div id="stage-hint" class="hidden">
     <div id="stage-hint-card">
       <div class="t" id="stage-hint-title">Space Prompter stage</div>
-      <div class="s" id="stage-hint-body">Drag this window onto your external display, then click anywhere (or press F) to go fullscreen. Press Play in the control window to start scrolling here. Press <kbd>Esc</kbd> any time to drop out of fullscreen and bring this card back.</div>
+      <div class="s" id="stage-hint-body">Drag this window onto the screen in front of the lens, then click anywhere or press <kbd>F</kbd> for full screen. Press Play in the control window to start. <kbd>Esc</kbd> leaves full screen and brings this card back.</div>
     </div>
   </div>
 
@@ -1138,7 +1138,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
   <button type="button" id="save-float" aria-label="Save changes">
     <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg><span>Save</span>
   </button>
-  <button type="button" id="back-btn" aria-label="Back to the paste screen" title="Back to the paste screen">
+  <button type="button" id="back-btn" aria-label="Back to the paste screen" title="Back to your script">
     <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"/></svg><span>Back</span>
   </button>
 
@@ -1157,7 +1157,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
       <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
     </button>
     <span class="cap-div only-dual"></span>
-    <button class="cap-side only-dual" id="display-btn" aria-pressed="false" aria-label="Open or close the Stage window" title="Open/close the Stage window">
+    <button class="cap-side only-dual" id="display-btn" aria-pressed="false" aria-label="Open or close the Stage window" title="Open or close the Stage window">
       <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
       <span id="display-label">Connect stage</span>
     </button>
@@ -1175,14 +1175,14 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
     <button class="icon-btn pedal-trigger" id="pedal-btn" aria-label="Bluetooth pedal setup" title="Bluetooth pedal">
       <svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
     </button>
-    <button class="icon-btn" id="pair-btn" aria-label="Pair a phone or tablet" title="Pair phone / tablet (QR)">
+    <button class="icon-btn" id="pair-btn" aria-label="Pair a phone or tablet" title="Pair a phone or tablet">
       <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm2 2v4h4V5zm8-2h8v8h-8zm2 2v4h4V5zM3 13h8v8H3zm2 2v4h4v-4zm10-2h2v2h-2zm4 2h2v2h-2zm-4 2h2v2h-2zm4 2h2v2h-2zm-2-4h2v2h-2zm2-2h2v2h-2z"/></svg>
     </button>
     <button class="icon-btn theme-btn" type="button" aria-label="Light mode" title="Light mode"><svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM2 13h2a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm18 0h2a1 1 0 0 0 0-2h-2a1 1 0 0 0 0 2zM11 2v2a1 1 0 0 0 2 0V2a1 1 0 0 0-2 0zm0 18v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-2 0zM5.99 4.58a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41L5.99 4.58zm12.37 12.37a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41l-1.06-1.06zm1.06-10.96a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06zM7.05 18.36a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06z"/></svg></button>
     <button class="icon-btn" id="fullscreen-btn" aria-label="Full screen — key F" title="Full screen (F)">
       <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7zM5 10h2V7h3V5H5zm12 9h-3v2h5v-5h-2zM14 5v2h3v3h2V5z"/></svg>
     </button>
-    <button class="icon-btn only-dual" id="sync-btn" aria-label="Sync screens" title="Sync screens — re-send the current position to the Stage window and preview">
+    <button class="icon-btn only-dual" id="sync-btn" aria-label="Sync screens" title="Sync screens: send this position to the Stage window again">
       <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
     </button>
     <span id="sync-status" class="only-dual" role="status"></span>
@@ -1199,7 +1199,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
       <div class="sec-title" id="stage-preview-label"><span>Stage preview</span><i id="preview-dot" title="Lights up when the Stage window is connected"></i></div>
       <div id="stage-preview-frame-wrap">
         <iframe id="stage-preview-frame" tabindex="-1" aria-hidden="true"></iframe>
-        <div id="preview-empty">no script yet</div>
+        <div id="preview-empty">No script yet</div>
       </div>
     </div>
   </div>
@@ -1232,11 +1232,11 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
       </div>
     </div>
     <div class="tpair">
-      <button class="tbtn guide" id="guide-btn" aria-pressed="true" aria-label="Guide line" title="Reading guide line">
+      <button class="tbtn guide" id="guide-btn" aria-pressed="true" aria-label="Guide line" title="Guide line">
         <span>Guide line</span>
         <svg viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 5h18v14H3V5zm2 2v10h14V7H5z"/><rect x="5" y="11" width="14" height="2"/></svg>
       </button>
-      <button class="tbtn" id="fade-btn" aria-pressed="true" aria-label="Fade other lines" title="On: lines away from the guide fade to grey. Off: all text stays white.">
+      <button class="tbtn" id="fade-btn" aria-pressed="true" aria-label="Fade other lines" title="Fade other lines">
         <span>Fade text</span>
         <svg viewBox="0 0 24 24"><path d="M3 5h18v2H3zM3 9h18v2H3z" opacity=".35"/><path d="M3 13h18v2H3zM3 17h18v2H3z"/></svg>
       </button>
@@ -1246,15 +1246,15 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
       <input type="range" id="dim" min="0" max="90" step="5">
     </div>
     <div class="tpair three">
-      <button class="tbtn" id="mirror-btn" aria-pressed="false" aria-label="Flip H — horizontal flip" title="Horizontal flip (stage window in dual mode)">
+      <button class="tbtn" id="mirror-btn" aria-pressed="false" aria-label="Flip H — horizontal flip" title="Mirror left to right (Stage window)">
         <span>Flip H</span>
         <svg viewBox="0 0 24 24"><path d="M11 3h2v18h-2zM4 7l5 5-5 5zM20 7l-5 5 5 5z"/></svg>
       </button>
-      <button class="tbtn" id="flip-btn" aria-pressed="false" aria-label="Flip V — vertical flip" title="Vertical flip (stage window in dual mode)">
+      <button class="tbtn" id="flip-btn" aria-pressed="false" aria-label="Flip V — vertical flip" title="Upside down (Stage window)">
         <span>Flip V</span>
         <svg viewBox="0 0 24 24" style="transform:rotate(90deg)"><path d="M11 3h2v18h-2zM4 7l5 5-5 5zM20 7l-5 5 5 5z"/></svg>
       </button>
-      <button class="tbtn" id="rotate-btn" aria-label="Rotate 90 degrees" title="Each press turns the prompter 90°, then loops back to 0° (stage window in dual mode)">
+      <button class="tbtn" id="rotate-btn" aria-label="Rotate 90 degrees" title="Turn 90° (Stage window)">
         <span>Rotate</span><span class="rot-deg" id="rot-deg">0°</span>
         <svg viewBox="0 0 24 24"><path d="M16.5 3.5L21 8l-4.5 4.5V9.2c-2.6.4-4.5 2.6-4.5 5.3 0 3 2.5 5.5 5.5 5.5v2c-4.1 0-7.5-3.4-7.5-7.5 0-3.8 2.8-6.9 6.5-7.4V3.5zM3 6h6v6H3z"/></svg>
       </button>
@@ -1267,7 +1267,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
   </div>
 
   <div id="display-fallback" class="only-dual">
-    <div class="s">Couldn't open a new window automatically. Copy this link and open it manually in a new window (File → New Window), then drag that window to your second display:</div>
+    <div class="s">The browser blocked the Stage window. Copy this link, open it in a new window (File → New Window), then drag that window to your second screen:</div>
     <div id="display-fallback-row">
       <input id="display-fallback-url" readonly>
       <button class="btn" id="display-fallback-copy" style="padding:7px 10px">Copy</button>
