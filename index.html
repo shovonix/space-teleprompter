@@ -5344,57 +5344,6 @@ var qrcode = function() {
     pairMaybeAutoOpen(false);
   }
 
-  // ---- Moving from studio.shovonix.dev to prompter.shovonix.dev ----
-  // studio.*: show a banner. prompter.*: pull saved scripts/settings once from
-  // the old address (hidden iframe + postMessage), merge, then reload once.
-  (function(){
-    if(isStageWindow || window.top !== window) return;
-    var host = location.hostname;
-    if(host === 'studio.shovonix.dev'){
-      var bar = document.createElement('div');
-      bar.setAttribute('role','status');
-      bar.style.cssText = 'position:fixed;top:4px;left:50%;transform:translateX(-50%);z-index:99999;max-width:94vw;display:flex;align-items:center;gap:10px;padding:4px 4px 4px 14px;border-radius:10px;background:#F4F4F2;color:#0A0A0B;font:600 12.5px/1.3 Archivo,system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5)';
-      bar.innerHTML = '<span>Space Prompter is moving to <b>prompter.shovonix.dev</b>. Your scripts carry over.</span>' +
-        '<a href="https://prompter.shovonix.dev/" style="flex:none;background:#0A0A0B;color:#F4F4F2;text-decoration:none;padding:6px 12px;border-radius:8px;font-weight:700">Open new address</a>';
-      document.body.appendChild(bar);
-    }else if(host === 'prompter.shovonix.dev'){
-      var FLAG = 'sp-migrated-from-studio';
-      try{ if(localStorage.getItem(FLAG)) return; }catch(e){ return; }
-      var done = false, frame = document.createElement('iframe');
-      function finish(changed){
-        if(done) return; done = true;
-        try{ localStorage.setItem(FLAG, '1'); }catch(e){}
-        try{ frame.remove(); }catch(e){}
-        if(changed) location.reload();
-      }
-      window.addEventListener('message', function(e){
-        if(e.origin !== 'https://studio.shovonix.dev' || !e.data || e.data.sp !== 'migrate') return;
-        var changed = false;
-        try{
-          var remote = e.data.state ? JSON.parse(e.data.state) : null;
-          if(remote && Array.isArray(remote.scripts) && remote.scripts.length){
-            var localRaw = localStorage.getItem(STORE_KEY);
-            var local = localRaw ? JSON.parse(localRaw) : null;
-            var localHas = local && Array.isArray(local.scripts) && local.scripts.some(function(s){ return s && s.text && s.text.trim(); });
-            if(!localHas){
-              localStorage.setItem(STORE_KEY, e.data.state); changed = true;
-            }else{
-              var ids = {}; local.scripts.forEach(function(s){ ids[s.id] = 1; });
-              remote.scripts.forEach(function(s){ if(s && !ids[s.id]){ local.scripts.push(s); changed = true; } });
-              if(changed) localStorage.setItem(STORE_KEY, JSON.stringify(local));
-            }
-          }
-        }catch(err){}
-        finish(changed);
-      });
-      frame.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
-      frame.src = 'https://studio.shovonix.dev/migrate.html';
-      frame.onload = function(){ try{ frame.contentWindow.postMessage('sp-migrate?', 'https://studio.shovonix.dev'); }catch(e){} };
-      document.body.appendChild(frame);
-      setTimeout(function(){ finish(false); }, 5000);
-    }
-  })();
-
   // ---- Install-as-app prompts (landing header + Controls panel; never on the prompting stage) ----
   (function(){
     var btns = [document.getElementById('install-setup'), document.getElementById('install-rail')].filter(Boolean);

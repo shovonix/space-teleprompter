@@ -8,7 +8,7 @@ Self-hosted teleprompter for video shoots. Live at https://prompter.shovonix.dev
 - `site/` — the shovonix.dev hub page and blog.
 - `landing/` — landing pages (`space-prompter/`, `fx/`).
 - `ops/sp-stats.sh` — GoAccess traffic stats from nginx logs (runs on the VPS as root).
-- `migrate.html` — moved saved scripts from the old studio address. Dead since studio was shut down (11 Nov 2026); the migration block in `index.html` now times out harmlessly. Both can be removed.
+- (`migrate.html` and the studio migration block were removed in v4.0; `migrateScripts()` in index.html is a different, still-needed upgrade of old saved data.)
 
 Preview locally: `python3 -m http.server 8000`, then open http://localhost:8000
 
