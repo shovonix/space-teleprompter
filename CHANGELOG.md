@@ -3,6 +3,7 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- Make it yours: click the logo, pick your own logo or a photo, press Save. Saved on this device.
 - What's new: after an update, a short card shows what changed (once). Click the version, bottom left, to see it again. The update notice is one short line with a close button.
 - Version moved to the bottom line ("Space Prompter v… © shovonix"); the name beside the logo is bigger.
 - Send feedback: bottom of the left panel (Bug, Idea or Love it, with screenshots or video).
