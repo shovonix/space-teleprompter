@@ -3,6 +3,7 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- No flash of the wrong page on reload.
 - Pasting from Google Docs, Word or a web page keeps your paragraphs and empty lines exactly. Extra blank lines add space on the prompter.
 
 ## v3.7 (11 Nov 2026)

@@ -1,4 +1,8 @@
 <meta charset="UTF-8">
+<script>/* No flash on reload: hide the page until the boot code has arranged it (setup vs prompter, rails).
+   Removed at the end of boot; safety net after 3 s. (Same idea as Space Cam v1.2.) */
+document.documentElement.classList.add('sp-loading');setTimeout(function(){document.documentElement.classList.remove('sp-loading');},3000);</script>
+<style>html.sp-loading{background:#070707}html.sp-loading body{visibility:hidden}html.sp-loading *,html.sp-loading *::before,html.sp-loading *::after{transition:none!important;animation-duration:0s!important}</style>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0A0A0B">
 <meta name="mobile-web-app-capable" content="yes">
@@ -5309,6 +5313,7 @@ var qrcode = function() {
   applyStageWidth();
   applyDeviceType();
   if(!isStageWindow) renderScriptTabs(); // scripts list must show after a reload straight into the prompter
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.documentElement.classList.remove('sp-loading'); }); });
   // Re-run on the control window's own resize too (not just on a
   // stageWidth report): the mini preview's on-screen box itself changes
   // size across the mobile breakpoint, so its scale needs recomputing
