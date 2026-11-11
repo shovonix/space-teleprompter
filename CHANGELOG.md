@@ -3,6 +3,12 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- What's new: after an update, a short card shows what changed (once). Click the version, bottom left, to see it again. The update notice is one short line with a close button.
+- Version moved to the bottom line ("Space Prompter v… © shovonix"); the name beside the logo is bigger.
+- Send feedback: bottom of the left panel (Bug, Idea or Love it, with screenshots or video).
+- How to use: the ? beside Controls opens a few short steps.
+- Keys list in Controls matches Space Cam; ↑ ↓ change the speed in Dual Monitor too.
+- Every popup blurs the background the same way.
 - Light mode: the sun / moon button in the Controls panel and on the paste page. The Stage window always stays black for the prompter glass.
 - The installed app always opens the newest version, and checks for updates when you click back into it.
 - No flash of the wrong page on reload.
