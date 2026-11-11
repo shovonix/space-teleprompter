@@ -975,6 +975,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
     "How to use: the ? beside Controls walks you through it in a few short steps.",
     "Make it yours: click the logo, pick your own logo or a photo, and press Save.",
     "Send feedback: bottom left. Tell Shovon about a bug or an idea, or that you love it.",
+    "A first-time welcome that reads like a real script: press Space or Play to see it scroll.",
     "Scripts list: newest first, with the date and word count.",
     "The arrow keys change the speed in Dual Monitor too."
   ],
@@ -3779,12 +3780,18 @@ var qrcode = function() {
     return !isStageWindow && document.activeElement && scriptText.contains(document.activeElement);
   }
   var renderedText = null; // the exact text currently built into #script-text
+  var welcomeMode = false; // first visit: no script with text yet
+  var WELCOME_TEXT = 'Welcome to Space Prompter.\n\nPress Space or Play to see your words scroll like this.\n\nClick Edit script below to paste your own. Google Docs and Word keep their paragraphs.\n\nPick Mobile, Tablet, Single Monitor or Dual Monitor on the right, whatever you read from.\n\nYour words stay big and clear on the reading line while you look into the lens.';
   function applyText(){
     // Inline editing: our own typing already lives in the DOM, so rebuilding
     // it here would reset the caret and scroll position mid-sentence.
     if(isEditingScript()) return;
     var activeS = activeScript();
     var text = (activeS && activeS.text) || (isStageWindow ? 'Waiting for script from the control window…' : '');
+    // First visit, no script yet: the prompter shows a short welcome that reads like a real script
+    // (script-sized, on the reading line). Not saved as a script. Same idea as Space Cam v1.8.3.
+    if(!isStageWindow && welcomeMode && !(activeS && activeS.text && activeS.text.trim())) text = WELCOME_TEXT;
+    document.body.classList.toggle('welcome', text === WELCOME_TEXT);
 
     // Same text already on screen: leave the DOM alone. Every 'state'
     // broadcast (any slider, key, or stage-width report) lands here, and
@@ -4310,6 +4317,7 @@ var qrcode = function() {
     else{ try{ scriptText.blur(); }catch(e){} }
   }
   editBtn.addEventListener('click', function(){
+    if(document.body.classList.contains('welcome')){ welcomeMode = false; pause(); showSetup(false); input.focus(); return; } // welcome isn't a script: paste your own
     setEditMode(!editMode); // all modes: turns inline editing on/off (button reads Save while on)
   });
   controlsBtn.addEventListener('click', function(){ toggleRail('right'); });
@@ -5736,6 +5744,8 @@ var qrcode = function() {
     showStage();
   }else if(activeScript() && activeScript().text && activeScript().text.trim()){
     showStage();
+  }else if(!state.scripts.some(function(s){ return s && s.text && s.text.trim(); }) && !/^#join=/.test(location.hash)){
+    welcomeMode = true; renderedText = null; applyText(); showStage(); seekTo(0);
   }else{
     showSetup(false);
   }

@@ -3,6 +3,7 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- First visit: the prompter opens with a short welcome that reads like a real script. Press Space to see it scroll; Edit script to paste your own.
 - Scripts list: newest first, with the date and word count under each name.
 - Make it yours: click the logo, pick your own logo or a photo, press Save. Saved on this device.
 - What's new: after an update, a short card shows what changed (once). Click the version, bottom left, to see it again. The update notice is one short line with a close button.
