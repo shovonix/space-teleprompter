@@ -3,7 +3,13 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased
+- (nothing yet)
+
+## v3.7 (11 Nov 2026)
 - Setup page: a card introducing Space Cam (camera + prompter in one window) for solo shoots. Desktop only. Hidden for good once closed or clicked, or if Space Cam has set its `spacecam=1` cookie.
+
+Toast line (`APP_NOTES`):
+> Say hello to Space Cam, made for solo shoots.
 
 ## v3.6 (9 Nov 2026)
 - Dual Monitor: stage and control windows stay in line while playing. No more blinking, up-and-down movement or jumping paragraphs. (Live since 9 Nov without a version bump, commits `95ae584`, `b9a4e35`.)
