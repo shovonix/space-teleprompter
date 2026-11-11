@@ -270,6 +270,9 @@ body:not(.stage-window) #setup{left:var(--rail);right:var(--rail)}
 #update-toast .upd-x{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;opacity:.55;cursor:pointer}
 #update-toast .upd-x:hover{opacity:1;background:rgba(0,0,0,.08)}
 
+/* Script cards: name + "Today 14:20 · 312 words" (same as Space Cam) */
+.script-tab-main{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;text-align:left}
+.script-tab-meta{font:400 11px/1.4 'Public Sans',system-ui,sans-serif;color:var(--fg-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Make it yours: your own logo (same card as Space Cam; every Space app has it) */
 #left-rail .brand-logo{cursor:pointer}
 .sp-icon-pop{display:flex;align-items:flex-start;gap:24px}
@@ -972,6 +975,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
     "How to use: the ? beside Controls walks you through it in a few short steps.",
     "Make it yours: click the logo, pick your own logo or a photo, and press Save.",
     "Send feedback: bottom left. Tell Shovon about a bug or an idea, or that you love it.",
+    "Scripts list: newest first, with the date and word count.",
     "The arrow keys change the speed in Dual Monitor too."
   ],
   "fixed": [
@@ -4099,7 +4103,7 @@ var qrcode = function() {
   function commitActiveScriptText(v){
     var s = activeScript();
     if(!s){
-      s = { id: genId(), name: nextDefaultName(), text: '', updatedAt: Date.now() };
+      s = { id: genId(), name: nextDefaultName(), text: '', createdAt: Date.now(), updatedAt: Date.now() };
       state.scripts.push(s);
       state.activeScriptId = s.id;
     }
@@ -4167,15 +4171,32 @@ var qrcode = function() {
       else{ applyText(); seekTo(0); }
     }
   }
+  // When a script was added or last changed ("Today 14:20") and how long it is, under its name (same as Space Cam)
+  function scriptWhen(ms){
+    if(!ms) return '';
+    var d = new Date(ms), now = new Date(), y = new Date(now); y.setDate(now.getDate() - 1);
+    var hm = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    var day = d.toDateString() === now.toDateString() ? 'Today' : d.toDateString() === y.toDateString() ? 'Yesterday' : d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    return day + ' ' + hm;
+  }
+  function wordCount(t){ var m = String(t || '').trim().match(/\S+/g); return m ? m.length : 0; }
   function renderScriptTabs(){
     scriptTabs.innerHTML = '';
-    state.scripts.forEach(function(s){
+    // newest script first (the list is stored oldest first; only the order on screen changes)
+    state.scripts.slice().reverse().forEach(function(s){
       var tab = document.createElement('button');
       tab.type = 'button';
       tab.className = 'script-tab' + (s.id === state.activeScriptId ? ' active' : '');
       var nameSpan = document.createElement('span');
       nameSpan.className = 'script-tab-name';
       nameSpan.textContent = s.name;
+      var main = document.createElement('span');
+      main.className = 'script-tab-main';
+      var meta = document.createElement('span');
+      meta.className = 'script-tab-meta';
+      var wc = wordCount(s.text);
+      meta.textContent = [scriptWhen(s.createdAt || s.updatedAt), wc + ' word' + (wc === 1 ? '' : 's')].filter(Boolean).join(' · ');
+      main.appendChild(nameSpan); main.appendChild(meta);
       var actions = document.createElement('span');
       actions.className = 'script-tab-actions';
       var editAct = document.createElement('span');
@@ -4194,7 +4215,7 @@ var qrcode = function() {
       delBtn.addEventListener('click', function(e){ deleteScript(s.id, e); });
       actions.appendChild(editAct);
       actions.appendChild(delBtn);
-      tab.appendChild(nameSpan);
+      tab.appendChild(main);
       tab.appendChild(actions);
       tab.addEventListener('click', function(){ selectScript(s.id); });
       scriptTabs.appendChild(tab);
@@ -4242,7 +4263,7 @@ var qrcode = function() {
     var name = prompt('Name this script:', nextDefaultName());
     if(name === null) return;
     name = name.trim() || nextDefaultName();
-    var s = { id: genId(), name: name, text: '', updatedAt: Date.now() };
+    var s = { id: genId(), name: name, text: '', createdAt: Date.now(), updatedAt: Date.now() };
     state.scripts.push(s);
     state.activeScriptId = s.id;
     pruneEmptyScripts(s.id);
@@ -4303,7 +4324,7 @@ var qrcode = function() {
     pruneEmptyScripts(cur && !cur.text ? cur.id : null);
     cur = activeScript();
     if(!cur || cur.text){
-      var s = { id: genId(), name: nextDefaultName(), text: '', updatedAt: Date.now() };
+      var s = { id: genId(), name: nextDefaultName(), text: '', createdAt: Date.now(), updatedAt: Date.now() };
       state.scripts.push(s);
       state.activeScriptId = s.id;
       save();
