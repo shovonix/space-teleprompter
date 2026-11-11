@@ -1,8 +1,8 @@
 <meta charset="UTF-8">
 <script>/* No flash on reload: hide the page until the boot code has arranged it (setup vs prompter, rails).
    Removed at the end of boot; safety net after 3 s. (Same idea as Space Cam v1.2.) */
-document.documentElement.classList.add('sp-loading');setTimeout(function(){document.documentElement.classList.remove('sp-loading');},3000);</script>
-<style>html.sp-loading{background:#070707}html.sp-loading body{visibility:hidden}html.sp-loading *,html.sp-loading *::before,html.sp-loading *::after{transition:none!important;animation-duration:0s!important}</style>
+document.documentElement.classList.add('sp-loading');try{if(localStorage.getItem('spTheme')==='light'&&!/^#stage/.test(location.hash))document.documentElement.classList.add('sp-light-early');}catch(e){}setTimeout(function(){document.documentElement.classList.remove('sp-loading');},3000);</script>
+<style>html.sp-loading{background:#070707}html.sp-loading.sp-light-early{background:#F5F5F6}html.sp-loading body{visibility:hidden}html.sp-loading *,html.sp-loading *::before,html.sp-loading *::after{transition:none!important;animation-duration:0s!important}</style>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0A0A0B">
 <meta name="mobile-web-app-capable" content="yes">
@@ -783,6 +783,117 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
 .install-pulse{animation:installPulse 1.2s ease-in-out 6}
 #install-rail:hover,#install-setup:hover{background:rgba(59,130,246,.3)}
 </style>
+<script>
+/* Light mode (control window only; the Stage window and its mini preview stay black for the prompter glass).
+   Same as Space Cam v1.6: at load this reads the app's own CSS and writes a light twin of every rule that sets a grey
+   (dark backgrounds turn light, light text turns dark). Red and other colours stay. It only applies while
+   <html data-theme="light">, so the sun/moon button switches it live. Main colours are tuned by hand at the end.
+   Saved under its own key 'spTheme' ('light' / 'dark'), separate from the scripts store. */
+(function(){
+  if(/^#stage/.test(location.hash)) return;
+  var t=null; try{ t=localStorage.getItem('spTheme'); }catch(e){}
+  if(t==='light') document.documentElement.setAttribute('data-theme','light');
+  var L='html[data-theme="light"]';
+  var NOCAM='';
+  var COLOR=/#([0-9a-f]{3,8})\b|rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:\s*[,/]\s*([\d.]+%?))?\s*\)/gi;
+  function parse(m){
+    var r,g,b,a=1;
+    if(m[1]){ var h=m[1]; if(h.length<=4){ h=h.split('').map(function(c){return c+c;}).join(''); }
+      r=parseInt(h.substr(0,2),16); g=parseInt(h.substr(2,2),16); b=parseInt(h.substr(4,2),16); if(h.length===8) a=parseInt(h.substr(6,2),16)/255; }
+    else { r=+m[2]; g=+m[3]; b=+m[4]; if(m[5]!=null) a=/%$/.test(m[5])?parseFloat(m[5])/100:+m[5]; }
+    return [r,g,b,a];
+  }
+  function flip(val, shadow){
+    var changed=false;
+    var out=val.replace(COLOR,function(){
+      var c=parse(arguments), r=c[0],g=c[1],b=c[2],a=c[3];
+      if(Math.max(r,g,b)-Math.min(r,g,b)>=16) return arguments[0]; // a real colour: keep
+      changed=true; var l=(r+g+b)/3, k=function(x){return +x.toFixed(3);};
+      if(shadow) return 'rgba(0,0,0,'+k(a*(l>128?0.10:0.14))+')';           // glows and shadows: soft, dark
+      if(a<1) return l>128 ? 'rgba(0,0,0,'+k(a*0.85)+')' : 'rgba(255,255,255,'+k(a)+')'; // white tint ↔ dark tint
+      // not a plain invert (that turns the cool greys yellowish and dark layers muddy): a curve onto clean neutral greys.
+      // dark layers (0–60) → near white 252–228 · borders/dims (60–120) → 228–152 · mid text → mid grey · white text → near black
+      var v = l<60 ? 252-l*0.4 : l<120 ? 228-(l-60)*1.27 : 152-(l-120)*1.0; v=Math.max(14,Math.round(v));
+      return 'rgb('+v+','+v+','+Math.min(255,v+2)+')';
+    });
+    return changed?out:null;
+  }
+  function chromaticBg(st){
+    var v=(st.getPropertyValue('background-color')||'')+' '+(st.getPropertyValue('background-image')||'')+' '+(st.getPropertyValue('background')||''), m, any=false;
+    if(/var\(--red/.test(v)) return true; // the red token (record, badges): white text on it stays white
+    COLOR.lastIndex=0; while((m=COLOR.exec(v))){ var c=parse(m); if(Math.max(c[0],c[1],c[2])-Math.min(c[0],c[1],c[2])>=16 && c[3]>0.5) any=true; }
+    return any;
+  }
+  function sel(s){
+    if(/stage-window|scp-stage/.test(s.replace(/:not\([^)]*\)/g,''))) return null; // Stage-only rules; ":not(.stage-window)" is fine
+    return s.split(',').map(function(p){ p=p.trim();
+      if(/^:root/.test(p)) return L+p.slice(5);
+      if(/^html\b/.test(p)) return L+p.slice(4);
+      var m=p.match(/((::?(before|after|first-line|first-letter|placeholder|selection|marker|backdrop|-webkit-[\w-]+|-moz-[\w-]+)(\([^)]*\))?)+)$/i);
+      var base=m?p.slice(0,p.length-m[1].length):p, pe=m?m[1]:'';
+      return L+' '+(base||'*')+NOCAM+pe; }).join(',');
+  }
+  var KF={}; // animations that use greys get a light copy: name → name-l
+  function frames(list){
+    var out='';
+    for(var i=0;i<list.length;i++){
+      var r=list[i];
+      if(r.type===4||r.type===12){ try{ out+=frames(r.cssRules); }catch(e){} continue; }
+      if(r.type!==7) continue;
+      var body='', any=false;
+      for(var j=0;j<r.cssRules.length;j++){
+        var k=r.cssRules[j], st=k.style, d='';
+        for(var q=0;q<st.length;q++){ var n=st[q], v=st.getPropertyValue(n), f=null;
+          if(/color$|shadow$|^background-image$/.test(n)) f=flip(v,/shadow$/.test(n));
+          else if(n==='filter' && /drop-shadow/.test(v)) f=flip(v,true);
+          if(f!=null) any=true; d+=n+':'+(f==null?v:f)+';'; }
+        body+=k.keyText+'{'+d+'}';
+      }
+      if(any){ KF[r.name]=r.name+'-l'; out+='@keyframes '+r.name+'-l{'+body+'}'; }
+    }
+    return out;
+  }
+  function rules(list){
+    var out='';
+    for(var i=0;i<list.length;i++){
+      var r=list[i];
+      if(r.type===4){ var inner=rules(r.cssRules); if(inner) out+='@media '+r.conditionText+'{'+inner+'}'; continue; }
+      if(r.type===12){ var inner2=rules(r.cssRules); if(inner2) out+='@supports '+r.conditionText+'{'+inner2+'}'; continue; }
+      if(r.type!==1) continue;
+      var st=r.style, decl='', any=false, keepText=chromaticBg(st);
+      // shorthands written with a variable (background: var(--red)) leave their longhands empty in the CSSOM:
+      // copy the shorthand itself, or a later grey rule beats it (Record turned white, recording dots stayed green)
+      ['background','border','border-top','border-right','border-bottom','border-left','border-color','outline'].forEach(function(sh){
+        var sv=st.getPropertyValue(sh); if(!sv || sv.indexOf('var(')<0) return;
+        decl+=sh+':'+sv+(st.getPropertyPriority(sh)?' !important':'')+';';
+      });
+      for(var j=0;j<st.length;j++){
+        var n=st[j], v=st.getPropertyValue(n);
+        if(!v) continue;
+        var isCol=/color$|^background-image$|^box-shadow$|^text-shadow$|^fill$|^stroke$|^--/.test(n);
+        if(!isCol) continue;
+        // every colour declaration is replayed in its original order (flipped or as is), so later rules still win
+        // over earlier ones exactly as in dark mode; white text on a red button stays white
+        var f=(v.indexOf('var(')>=0 || (keepText && (n==='color'||n==='fill'||n==='stroke'))) ? null : flip(v, /shadow$/.test(n));
+        if(f!=null) any=true;
+        decl+=n+':'+(f==null?v:f)+(st.getPropertyPriority(n)?' !important':'')+';';
+      }
+      var an=st.getPropertyValue('animation-name');
+      if(an && an.split(',').some(function(x){ return KF[x.trim()]; })) decl+='animation-name:'+an.split(',').map(function(x){ x=x.trim(); return KF[x]||x; }).join(',')+(st.getPropertyPriority('animation-name')?' !important':'')+';';
+      if(decl){ var s2=sel(r.selectorText); if(s2) out+=s2+'{'+decl+'}'; }
+    }
+    return out;
+  }
+  var css='', i;
+  for(i=0;i<document.styleSheets.length;i++){ try{ css+=frames(document.styleSheets[i].cssRules); }catch(e){} }
+  for(i=0;i<document.styleSheets.length;i++){ try{ css+=rules(document.styleSheets[i].cssRules); }catch(e){} }
+  // the prompter area's black is set from JavaScript (applyBgOpacity)
+  css+=L+' #stage{background-color:var(--stage)!important}';
+  css+=L+'{--bg:#F5F5F6;--stage:#FFFFFF;--panel:#FBFBFC;--surface:#FBFBFC;--surface-2:#EEEEF0;--raised:#EEEEF0;--hair:#E1E1E4;--border:#E1E1E4;--fg:#111113;--fg-dim:#6B6B72;--accent:#111113;--accent-rgb:17,17,19;--accent-fg:#FAFAF9;color-scheme:light}';
+
+  var el=document.createElement('style'); el.id='sp-light'; el.textContent=css; document.head.appendChild(el);
+})();
+</script>
 
 <button type="button" id="update-toast" aria-live="polite"></button>
 <aside id="left-rail" class="rail">
@@ -825,6 +936,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
       <div class="sec-title">Device type</div>
       <div class="device-picker" data-picker></div>
       <div class="pedal-row">
+        <button class="icon-btn theme-btn" type="button" aria-label="Light mode" title="Light mode"><svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM2 13h2a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm18 0h2a1 1 0 0 0 0-2h-2a1 1 0 0 0 0 2zM11 2v2a1 1 0 0 0 2 0V2a1 1 0 0 0-2 0zm0 18v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-2 0zM5.99 4.58a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41L5.99 4.58zm12.37 12.37a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41l-1.06-1.06zm1.06-10.96a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06zM7.05 18.36a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06z"/></svg></button>
         <button class="icon-btn pedal-trigger" id="pedal-btn-setup" aria-label="Bluetooth pedal setup" title="Bluetooth pedal">
           <svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
         </button>
@@ -937,6 +1049,7 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
     <button class="icon-btn" id="pair-btn" aria-label="Pair a phone or tablet" title="Pair phone / tablet (QR)">
       <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm2 2v4h4V5zm8-2h8v8h-8zm2 2v4h4V5zM3 13h8v8H3zm2 2v4h4v-4zm10-2h2v2h-2zm4 2h2v2h-2zm-4 2h2v2h-2zm4 2h2v2h-2zm-2-4h2v2h-2zm2-2h2v2h-2z"/></svg>
     </button>
+    <button class="icon-btn theme-btn" type="button" aria-label="Light mode" title="Light mode"><svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM2 13h2a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm18 0h2a1 1 0 0 0 0-2h-2a1 1 0 0 0 0 2zM11 2v2a1 1 0 0 0 2 0V2a1 1 0 0 0-2 0zm0 18v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-2 0zM5.99 4.58a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41L5.99 4.58zm12.37 12.37a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41l-1.06-1.06zm1.06-10.96a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06zM7.05 18.36a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06z"/></svg></button>
     <button class="icon-btn" id="fullscreen-btn" aria-label="Full screen — key F" title="Full screen (F)">
       <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7zM5 10h2V7h3V5H5zm12 9h-3v2h5v-5h-2zM14 5v2h3v3h2V5z"/></svg>
     </button>
@@ -5282,6 +5395,26 @@ var qrcode = function() {
     document.addEventListener('visibilitychange', function(){ if(!document.hidden) checkForUpdate(); });
     document.getElementById('update-toast').addEventListener('click', function(){ location.reload(); });
   }
+
+  // ---- Light / dark (sun = switch to light, moon = switch to dark). Colours are made in the <head> script. ----
+  (function(){
+    if(isStageWindow) return;
+    var SUN = document.querySelector('.theme-btn').innerHTML;
+    var MOON = '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>';
+    var btns = document.querySelectorAll('.theme-btn');
+    function render(){
+      var light = document.documentElement.getAttribute('data-theme') === 'light';
+      btns.forEach(function(b){ b.innerHTML = light ? MOON : SUN; b.title = light ? 'Dark mode' : 'Light mode'; b.setAttribute('aria-label', b.title); });
+      var tc = document.querySelector('meta[name="theme-color"]'); if(tc) tc.setAttribute('content', light ? '#F5F5F6' : '#0A0A0B');
+    }
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      var light = document.documentElement.getAttribute('data-theme') !== 'light';
+      if(light) document.documentElement.setAttribute('data-theme', 'light'); else document.documentElement.removeAttribute('data-theme');
+      try{ localStorage.setItem('spTheme', light ? 'light' : 'dark'); }catch(e){}
+      render();
+    }); });
+    render();
+  })();
 
   // ---- Space Cam promo (setup page, desktop) ----
   // Shown until the person hides it or clicks through. Also skipped if Space Cam

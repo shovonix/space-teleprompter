@@ -3,6 +3,7 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- Light mode: the sun / moon button in the Controls panel and on the paste page. The Stage window always stays black for the prompter glass.
 - The installed app always opens the newest version, and checks for updates when you click back into it.
 - No flash of the wrong page on reload.
 - Pasting from Google Docs, Word or a web page keeps your paragraphs and empty lines exactly. Extra blank lines add space on the prompter.
