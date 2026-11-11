@@ -3,6 +3,8 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- Hover notes: rest the mouse on a control's name to see what it does.
+- Calmer right panel: one thin line per section, keyboard shortcuts behind one row. Side panels are 15% bigger on laptops and desktops.
 - First visit: the prompter opens with a short welcome that reads like a real script. Press Space to see it scroll; Edit script to paste your own.
 - Scripts list: newest first, with the date and word count under each name.
 - Make it yours: click the logo, pick your own logo or a photo, press Save. Saved on this device.
