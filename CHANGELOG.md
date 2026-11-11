@@ -3,6 +3,8 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- Calmer messages: rename, delete and "discard changes?" are Space-style cards instead of browser boxes; tips are short cards at the top with one button that does the fix; the pairing pill is black and white.
+- New script opens an empty paste box straight away (rename it with the pencil).
 - Hover notes: rest the mouse on a control's name to see what it does.
 - Calmer right panel: one thin line per section, keyboard shortcuts behind one row. Side panels are 15% bigger on laptops and desktops.
 - First visit: the prompter opens with a short welcome that reads like a real script. Press Space to see it scroll; Edit script to paste your own.

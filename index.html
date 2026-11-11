@@ -233,6 +233,9 @@ body:not(.stage-window) #setup{left:var(--rail);right:var(--rail)}
 .sp-modal-row{display:flex;align-items:center;justify-content:flex-end;gap:10px}
 .sp-modal-row .btn{padding:10px 18px}
 .sp-modal-row .btn.primary{flex:none;min-width:0;box-shadow:none}
+.sp-modal-input{width:100%;box-sizing:border-box;background:#0E0E0F;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:10px 12px;color:var(--fg);font:500 15px 'Public Sans',system-ui,sans-serif;outline:none}
+.sp-modal-input:focus{border-color:rgba(255,255,255,.55)}
+.sp-modal-row .btn.primary.danger{background:var(--red);border-color:var(--red);color:#fff}
 @keyframes spModalIn{from{opacity:0}to{opacity:1}}
 @keyframes spCardIn{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:none}}
 .pair-modal{background:rgba(0,0,0,.78)!important;-webkit-backdrop-filter:blur(8px)!important;backdrop-filter:blur(8px)!important}
@@ -637,8 +640,10 @@ input[type=range]::-moz-range-thumb{
 .pair-note{font-size:11.5px;color:#8a8a90;line-height:1.5}
 #pair-pill{position:fixed;top:14px;left:50%;transform:translate(-50%,-60px);z-index:150;padding:8px 16px;border-radius:999px;background:#18181b;border:1px solid #33333a;color:#dcdcde;font-size:12.5px;font-weight:600;opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none}
 #pair-pill.show{opacity:1;transform:translate(-50%,0)}
-#pair-pill.ok{border-color:#2f6b45;color:#7ee8a2}
-#pair-pill.warn{border-color:#6b5a2f;color:#e8cf7e}
+/* calm: black and white only (red is for real breakage) */
+#pair-pill.ok{border-color:rgba(255,255,255,.35);color:var(--fg)}
+#pair-pill.ok::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--fg);margin-right:8px;vertical-align:1px}
+#pair-pill.warn{border-color:#33333a;color:var(--fg-dim)}
 body.ui-hidden #pair-pill{opacity:0}
 .seg{display:flex;gap:6px;margin:0 0 8px}
 .seg button{flex:1;height:38px;display:flex;align-items:center;justify-content:center;background:var(--raised);border:1px solid var(--hair);border-radius:10px;color:#dcdcde;cursor:pointer;transition:background .2s ease,border-color .2s ease}
@@ -764,7 +769,15 @@ body.solo.ui-hidden #stage{cursor:none}
 }
 #update-toast.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
 body.stage-window #update-toast{display:none}
-#mode-toast.show{opacity:1;transform:translate(-50%,0)}
+#mode-toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+/* calm message card (Space Cam v1.8.4 style) */
+#mode-toast{display:flex;align-items:center;gap:14px;text-align:left;border-radius:18px;padding:14px 12px 14px 16px;max-width:min(560px,calc(100% - 32px));background:#1B1B1D;border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 50px rgba(0,0,0,.55);z-index:30}
+#mode-toast .mt-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+#mode-toast .mt-txt b{font:700 15px 'Archivo',system-ui,sans-serif;color:var(--fg)}
+#mode-toast .mt-txt span{font:400 13px/1.4 'Public Sans',system-ui,sans-serif;color:var(--fg-dim)}
+#mode-toast .mt-act{flex:none;border:0;border-radius:11px;padding:9px 14px;background:var(--fg);color:var(--bg);font:700 13px 'Public Sans',system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+#mode-toast .mt-x{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--fg-dim);cursor:pointer}
+#mode-toast .mt-x:hover{color:var(--fg);background:rgba(255,255,255,.08)}
 body.stage-window #mode-toast{display:none}
 #save-float{
   position:absolute;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));z-index:7;display:none;
@@ -1001,7 +1014,8 @@ body.touch #screen-note{order:5;margin-top:12px;padding:10px 12px;font-size:12px
     "Scripts list: newest first, with the date and word count.",
     "The arrow keys change the speed in Dual Monitor too.",
     "Rest the mouse on a control's name to see what it does.",
-    "Calmer, bigger side panels on laptops and desktops."
+    "Calmer, bigger side panels on laptops and desktops.",
+    "Calmer messages: rename, delete and tips are short cards that say what to do."
   ],
   "fixed": [
     "Pasting from Google Docs, Word or a web page keeps your paragraphs and empty lines exactly.",
@@ -4081,16 +4095,25 @@ var qrcode = function() {
   // A short heads-up in Mobile / Tablet / Single Monitor: these work, but Dual Monitor
   // (or a tablet) is the better setup. Shown once per mode per browser-tab session.
   var toastTimer = null;
+  // Calm card at the top (same as Space Cam v1.8.4): title, what to do, one button that does it, close.
   function showModeToast(){
-    if(isStageWindow || state.deviceType === 'dual' || pair.role === 'guest') return;
+    if(isStageWindow || state.deviceType === 'dual' || state.deviceType === 'tablet' || pair.role === 'guest') return;
     var key = 'sp-toast-' + state.deviceType;
     try{ if(sessionStorage.getItem(key)) return; sessionStorage.setItem(key, '1'); }catch(e){}
     var el = document.getElementById('mode-toast');
     if(!el) return;
-    el.textContent = 'For the best experience, use Space Prompter with a dual-monitor setup or a tablet.';
+    var single = state.deviceType === 'single';
+    el.innerHTML = '<div class="mt-txt"><b>' + (single ? 'Got a second screen?' : 'Bigger screen, easier read') + '</b><span>' +
+      (single ? 'Dual Monitor puts the prompter on its own screen, and this window becomes your control panel.'
+              : 'A tablet or a second screen shows more of your script, bigger.') + '</span></div>' +
+      (single ? '<button type="button" class="mt-act">Use Dual Monitor</button>' : '') +
+      '<button type="button" class="mt-x" aria-label="Close" title="Close">✕</button>';
+    function hide(){ clearTimeout(toastTimer); el.classList.remove('show'); }
+    el.querySelector('.mt-x').addEventListener('click', hide);
+    var act = el.querySelector('.mt-act'); if(act) act.addEventListener('click', function(){ hide(); setDeviceType('dual'); });
     clearTimeout(toastTimer);
     setTimeout(function(){ el.classList.add('show'); }, 350);
-    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 5500);
+    toastTimer = setTimeout(hide, 9000);
   }
   function showStage(){
     setup.classList.add('hidden');
@@ -4127,11 +4150,11 @@ var qrcode = function() {
     var activeS = activeScript();
     return input.value !== (activeS ? activeS.text : '');
   }
-  function confirmDiscard(){
-    if(setup.classList.contains('hidden')) return true; // only the paste box can hold unsaved text
-    if(!hasUnsavedChanges()) return true;
+  // Unsaved text in the paste box: ask with a Space-style card, then run fn only if the person says Discard.
+  function withDiscard(fn){
+    if(setup.classList.contains('hidden') || !hasUnsavedChanges()){ fn(); return; } // only the paste box can hold unsaved text
     var activeS = activeScript();
-    return confirm('Discard unsaved changes to "' + (activeS ? activeS.name : 'this script') + '"?');
+    spAsk('Discard your changes?', 'Your edits to “' + (activeS ? activeS.name : 'this script') + '” aren’t saved yet. Press Save first to keep them.', 'Discard').then(function(ok){ if(ok) fn(); });
   }
   function commitActiveScriptText(v){
     var s = activeScript();
@@ -4157,7 +4180,9 @@ var qrcode = function() {
   }
   function selectScript(id){
     if(id === state.activeScriptId) return;
-    if(!confirmDiscard()) return;
+    withDiscard(function(){ selectScriptNow(id); });
+  }
+  function selectScriptNow(id){
     pruneEmptyScripts(id);
     state.activeScriptId = id;
     save();
@@ -4177,19 +4202,24 @@ var qrcode = function() {
     if(evt) evt.stopPropagation();
     var s = findScript(id);
     if(!s) return;
-    var name = prompt('Rename script:', s.name);
-    if(name === null) return;
-    name = name.trim();
-    if(!name) return;
-    s.name = name;
-    save();
-    renderScriptTabs();
+    spAskName('Rename script', s.name, 'Rename').then(function(name){
+      if(name === null) return;
+      name = name.trim();
+      if(!name) return;
+      s.name = name;
+      save();
+      renderScriptTabs();
+    });
   }
   function deleteScript(id, evt){
     if(evt) evt.stopPropagation();
     var s = findScript(id);
     if(!s) return;
-    if(!confirm('Delete "' + s.name + '"? This can\'t be undone.')) return;
+    spAsk('Delete “' + s.name + '”?', 'This can’t be undone.', 'Delete', true).then(function(ok){ if(ok) deleteScriptNow(id); });
+  }
+  function deleteScriptNow(id){
+    var s = findScript(id);
+    if(!s) return;
     state.scripts = state.scripts.filter(function(x){ return x.id !== id; });
     if(state.activeScriptId === id){
       state.activeScriptId = state.scripts.length ? state.scripts[0].id : null;
@@ -4291,12 +4321,10 @@ var qrcode = function() {
     commitActiveScriptText(v);
     flashButton(saveScriptBtn, 'Saved');
   });
-  newScriptBtn.addEventListener('click', function(){
-    if(!confirmDiscard()) return;
-    var name = prompt('Name this script:', nextDefaultName());
-    if(name === null) return;
-    name = name.trim() || nextDefaultName();
-    var s = { id: genId(), name: name, text: '', createdAt: Date.now(), updatedAt: Date.now() };
+  newScriptBtn.addEventListener('click', function(){ withDiscard(newScriptNow); });
+  function newScriptNow(){
+    // straight to an empty paste box with a default name; rename it later with the pencil
+    var s = { id: genId(), name: nextDefaultName(), text: '', createdAt: Date.now(), updatedAt: Date.now() };
     state.scripts.push(s);
     state.activeScriptId = s.id;
     pruneEmptyScripts(s.id);
@@ -4305,11 +4333,8 @@ var qrcode = function() {
     renderScriptTabs();
     if(setup.classList.contains('hidden')) showSetup(true); // new script from the rail while prompting -> paste page
     input.focus();
-  });
-  cancelEdit.addEventListener('click', function(){
-    if(!confirmDiscard()) return;
-    showStage();
-  });
+  }
+  cancelEdit.addEventListener('click', function(){ withDiscard(showStage); });
   function setEditMode(on){
     if(isStageWindow) return;
     if(on === editMode) return;
@@ -4350,10 +4375,10 @@ var qrcode = function() {
   // Logo + "Space Prompter" name in the top bar — same destination as the
   // Edit button (the paste-script screen), just a second, more obvious way
   // to get back to it.
-  brandHomeBtn.addEventListener('click', function(){
+  brandHomeBtn.addEventListener('click', function(){ withDiscard(brandHomeNow); });
+  function brandHomeNow(){
     // Fresh, empty paste screen. If the current script is already empty, reuse it
     // instead of piling up blank scripts.
-    if(!confirmDiscard()) return;
     var cur = activeScript();
     pruneEmptyScripts(cur && !cur.text ? cur.id : null);
     cur = activeScript();
@@ -4368,7 +4393,7 @@ var qrcode = function() {
     showSetup(false);
     input.value = '';
     input.focus();
-  });
+  }
 
   document.getElementById('save-float').addEventListener('click', function(){ setEditMode(false); });
   document.getElementById('back-btn').addEventListener('click', function(){ showSetup(true); });
@@ -5554,6 +5579,35 @@ var qrcode = function() {
     return { wrap: wrap, close: close };
   }
   window.spModal = spModal;
+  // Space-style confirm: resolves true on the main button, false otherwise. danger = red button (deleting only).
+  function spAsk(title, text, okLabel, danger){
+    return new Promise(function(resolve){
+      var done = false; function finish(v){ if(!done){ done = true; resolve(v); } }
+      var m = spModal('<div class="sp-modal-head"><div class="sp-modal-title">' + spEsc(title) + '</div><button type="button" class="sp-modal-x" data-close aria-label="Close">✕</button></div>' +
+        (text ? '<p class="sp-modal-p">' + spEsc(text) + '</p>' : '') +
+        '<div class="sp-modal-row"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn primary' + (danger ? ' danger' : '') + ' sp-ask-ok">' + spEsc(okLabel || 'OK') + '</button></div>',
+        { onClose: function(){ finish(false); } });
+      var ok = m.wrap.querySelector('.sp-ask-ok');
+      ok.addEventListener('click', function(){ finish(true); m.close(); });
+      ok.focus();
+    });
+  }
+  // Space-style name box: resolves the typed name, or null on cancel.
+  function spAskName(title, value, okLabel){
+    return new Promise(function(resolve){
+      var done = false; function finish(v){ if(!done){ done = true; resolve(v); } }
+      var m = spModal('<div class="sp-modal-head"><div class="sp-modal-title">' + spEsc(title) + '</div><button type="button" class="sp-modal-x" data-close aria-label="Close">✕</button></div>' +
+        '<input class="sp-modal-input" maxlength="80" spellcheck="false">' +
+        '<div class="sp-modal-row"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn primary sp-ask-ok">' + spEsc(okLabel || 'OK') + '</button></div>',
+        { onClose: function(){ finish(null); } });
+      var inp = m.wrap.querySelector('.sp-modal-input'), ok = m.wrap.querySelector('.sp-ask-ok');
+      inp.value = value || '';
+      function go(){ finish(inp.value); m.close(); }
+      ok.addEventListener('click', go);
+      inp.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); go(); } });
+      inp.focus(); inp.select();
+    });
+  }
   function spEsc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
   // ---- Bottom line + What's new + Send feedback (control window) ----
