@@ -3,6 +3,7 @@
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
 ## Unreleased (next: v4.0)
+- Same layout as Space Cam: Controls header with ? and a hide button; Device, Connect stage (with sync) and Stage preview, View (Flip H / Flip V / Rotate), Text, Guide and Pedal sections with small icons; Back, focus mode, light / dark and full screen at the top right of the prompter; hide either side panel (a small Space Prompter box stays top left); "+" for a new script.
 - Wording: labels, tooltips and messages are short and plain, the same as Space Cam.
 - Calmer messages: rename, delete and "discard changes?" are Space-style cards instead of browser boxes; tips are short cards at the top with one button that does the fix; the pairing pill is black and white.
 - New script opens an empty paste box straight away (rename it with the pencil).
