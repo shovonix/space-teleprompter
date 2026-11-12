@@ -2,7 +2,10 @@
 
 Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users until Shovon says to release.
 
-## Unreleased (next: v4.0)
+## Unreleased
+- (nothing yet)
+
+## v4.0 (12 Nov 2026)
 - One page, like Space Cam: no separate paste page. Add script (bottom bar, or + beside Scripts) and the pencil on a script open a popup to paste or edit. The Space Cam card moved to the bottom of the left panel.
 - Same layout as Space Cam: Controls header with ? and a hide button; Device, Connect stage (with sync) and Stage preview, View (Flip H / Flip V / Rotate), Text, Guide and Pedal sections with small icons; Back, focus mode, light / dark and full screen at the top right of the prompter; hide either side panel (a small Space Prompter box stays top left); "+" for a new script.
 - Wording: labels, tooltips and messages are short and plain, the same as Space Cam.
@@ -23,6 +26,9 @@ Fixes collect under **Unreleased** on the `next` branch. Nothing reaches users u
 - The installed app always opens the newest version, and checks for updates when you click back into it.
 - No flash of the wrong page on reload.
 - Pasting from Google Docs, Word or a web page keeps your paragraphs and empty lines exactly. Extra blank lines add space on the prompter.
+
+Toast line (`APP_NOTES`):
+> Space Prompter 4: light mode, your own logo, and pastes that keep your paragraphs.
 
 ## v3.7 (11 Nov 2026)
 - Setup page: a card introducing Space Cam (camera + prompter in one window) for solo shoots. Desktop only. Hidden for good once closed or clicked, or if Space Cam has set its `spacecam=1` cookie.
